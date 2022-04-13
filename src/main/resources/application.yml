@@ -1,0 +1,97 @@
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    key-store: keystore.p12
+    key-alias: keti
+    key-store-password: ketiketi
+    key-store-type: PKCS12
+
+spring:
+  application:
+    name: DH-APIGW
+
+# 라우팅에 대한 타임아웃 정책
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 10s
+      discovery.locator.enabled: true
+    circuitbreaker.resilience4j.enabled: true
+
+# Datasource
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://10.0.0.249:5432/apigw
+    username: postgres
+    password: postgres
+
+# REDIS 서버 설정
+  redis:
+    host: localhost
+    port: 6379
+
+# EUREKA 서버 설정
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8888/eureka
+    registerWithEureka: true
+    fetchRegistry: true
+    registryFetchIntervalSeconds: 30
+  instance:
+    prefer-ip-address: true
+    metadata-map:
+      management-port: ${management.server.port}
+      management-context-path: ${management.endpoints.web.base-path}
+      
+
+# Routing Retry 설정
+routingRetry:
+  retryValue: 3
+
+## ClientRateLimit 설정
+clientRateLimit:
+  scope: none #local cluster
+  type: clientId #clientId ip hostName
+  burstCapacity: 1000
+
+# Logging
+logging:
+  level:
+    ROOT : INFO
+
+# Propagation 설정
+propagate:
+  serviceId : ${spring.application.name}
+  refresh.path : /routes/refresh
+  request:
+    timeout : 5
+    retry.Count: 3
+
+# Security
+security:
+  accessToken:
+    publicKeyRetrievalUri: http://10.0.0.42:30000/security/publickey
+    defaultPublicKey: -----BEGIN PUBLIC KEY-----
+              MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCp2RW1GlfbjAu5gPKgzZGbq55O
+              92Ub/641Vpc0TVwsEvxlgJTB+igjzkVYohJGcZrh848iNF7EER6k5C/BDsdBf/B+
+              q1x/tcOafC/KlLpbCQEd/1m7T/Di0ngk5XPoQ7LsUvACBJiOAXR8PfvyZMLCYI5h
+              gsJOuYXYqH1Friy3jwIDAQAB
+              -----END PUBLIC KEY-----
+              
+management:
+  server:
+    port: 8081
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure.include: routes,services
+      base-path: /
+      
+# ManagementInterface 설정
+managementInterface:
+  security:
+    enabled: true
+    allowed-access-token-roles: System_Admin

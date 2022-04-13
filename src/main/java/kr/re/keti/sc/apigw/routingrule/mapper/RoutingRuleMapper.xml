@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.re.keti.sc.apigw.routingrule.mapper.RoutingRuleMapper">
+
+	<resultMap id="RoutingRule" type="kr.re.keti.sc.apigw.routingrule.model.RoutingRule" autoMapping="true">
+		<id property="id" column="RoutingRuleId"/>
+		<result property="name" column="RoutingRuleName"/>
+		<result property="description" column="RoutingRuleDescription"/>
+		<result property="useYn" column="RoutingRuleUseYn" typeHandler="kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler"/>
+		<result property="order" column="RoutingRuleOrder"/>
+		<result property="creationTime" column="RoutingRuleCreationTime"/>
+		<result property="modificationTime" column="RoutingRuleModificationTime"/>
+		<result property="creatorId" column="RoutingRuleCreatorId"/>
+		<result property="modifierId" column="RoutingRuleModifierId"/>
+		<result property="method" column="RoutingRuleMethod" typeHandler="kr.re.keti.sc.apigw.routingrule.model.MethodTypeHandler"/>
+		<result property="authorizationYn" column="RoutingRuleAuthorizationYn" typeHandler="kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler"/>
+		<result property="authorizationRoleIds" column="RoutingRuleAuthorizationRoleIds" typeHandler="kr.re.keti.sc.apigw.routingrule.model.StringArrayListTypeHandler"/>
+		<result property="newPath" column="RoutingRuleNewPath"/>
+		<result property="targetServiceId" column="TargetServiceId"/>
+		
+		<collection property="targetService" ofType="kr.re.keti.sc.apigw.internalservice.model.InternalService">
+			<id property="id" column="TargetServiceId"/>
+			<result property="communicationMethod" column="TargetServiceCommunicationMethod" typeHandler="kr.re.keti.sc.apigw.routingrule.model.ServiceCommunicationMethodTypeHandler"/>
+			<result property="address" column="TargetServiceAddress"/>
+			<result property="fallbackPath" column="TargetServiceFallbackPath"/>
+		</collection>
+		
+		<collection property="routingRuleDetails" ofType="kr.re.keti.sc.apigw.routingrule.model.RoutingRule$RoutingRuleDetail">
+    		<id property="sequence" column="RoutingRuleDetailSequence"/>
+    		<result property="type" column="RoutingRuleDetailType" typeHandler="kr.re.keti.sc.apigw.routingrule.model.RoutingRuleDetailTypeTypeHandler"/>
+    		<result property="attributeName" column="RoutingRuleDetailAttributeName"/>
+			<result property="attributeOperation" column="RoutingRuleDetailAttributeOperation" typeHandler="kr.re.keti.sc.apigw.routingrule.model.RoutingRuleDetailAttributeOperationTypeHandler"/>
+    		<result property="attributeValue" column="RoutingRuleDetailAttributeValue"/>
+    		<result property="logicalOperation" column="RoutingRuleDetailAttributeLogicalOperation" typeHandler="kr.re.keti.sc.apigw.routingrule.model.LogicalOperationTypeHandler"/>
+    	</collection>
+	</resultMap>
+	
+	<select id="selectAllRouteRules" resultMap="RoutingRule">
+		SELECT RR.routing_rule_id AS "RoutingRuleId", RR.target_service_id AS "TargetServiceId", RR.rule_order AS "RoutingRuleOrder", RR.name AS "RoutingRuleName", RR.description AS "RoutingRuleDescription",
+		RR.use_yn AS "RoutingRuleUseYn", RR.creation_time AS "RoutingRuleCreationTime", RR.modification_time AS "RoutingRuleModificationTime", RR.creator_id AS "RoutingRuleCreatorId", RR.modifier_id AS "RoutingRuleModifierId",
+		RR.authorization_yn AS "RoutingRuleAuthorizationYn", RR.authorization_role_ids AS "RoutingRuleAuthorizationRoleIds", RR.new_path AS "RoutingRuleNewPath", RR.method AS "RoutingRuleMethod",
+		RRD.routing_rule_detail_sequence AS "RoutingRuleDetailSequence", RRD.attribute_name AS "RoutingRuleDetailAttributeName", RRD.attribute_operation AS "RoutingRuleDetailAttributeOperation", 
+		RRD.type AS "RoutingRuleDetailType", RRD.attribute_value AS "RoutingRuleDetailAttributeValue", RRD.logical_operation AS "RoutingRuleDetailAttributeLogicalOperation"
+		FROM
+		routing_rule AS RR
+		LEFT OUTER JOIN routing_rule_detail AS RRD ON
+		(RR.routing_rule_id = RRD.routing_rule_id)
+		ORDER BY RR.rule_order, RR.routing_rule_id, RRD.routing_rule_detail_sequence ASC
+	</select>
+	
+	<select id="selectRouteRule" resultMap="RoutingRule">
+		SELECT RR.routing_rule_id AS "RoutingRuleId", RR.target_service_id AS "TargetServiceId", RR.rule_order AS "RoutingRuleOrder", RR.name AS "RoutingRuleName", RR.description AS "RoutingRuleDescription",
+		RR.use_yn AS "RoutingRuleUseYn", RR.creation_time AS "RoutingRuleCreationTime", RR.modification_time AS "RoutingRuleModificationTime", RR.creator_id AS "RoutingRuleCreatorId", RR.modifier_id AS "RoutingRuleModifierId",
+		RR.authorization_yn AS "RoutingRuleAuthorizationYn", RR.authorization_role_ids AS "RoutingRuleAuthorizationRoleIds", RR.new_path AS "RoutingRuleNewPath", RR.method AS "RoutingRuleMethod",
+		RRD.routing_rule_detail_sequence AS "RoutingRuleDetailSequence", RRD.attribute_name AS "RoutingRuleDetailAttributeName", RRD.attribute_operation AS "RoutingRuleDetailAttributeOperation", 
+		RRD.type AS "RoutingRuleDetailType", RRD.attribute_value AS "RoutingRuleDetailAttributeValue", RRD.logical_operation AS "RoutingRuleDetailAttributeLogicalOperation"
+		FROM routing_rule AS RR
+		JOIN routing_rule_detail AS RRD ON
+		(RR.routing_rule_id = RRD.routing_rule_id)
+		AND RR.routing_rule_id = #{id}
+		ORDER BY RR.rule_order, RR.routing_rule_id, RRD.routing_rule_detail_sequence ASC
+	</select>
+
+	<select id="selectAllRouteRulesForConfiguringRoutes" resultMap="RoutingRule">
+		SELECT RR.routing_rule_id AS "RoutingRuleId", RR.target_service_id AS "TargetServiceId", RR.rule_order AS "RoutingRuleOrder", RR.name AS "RoutingRuleName", RR.description AS "RoutingRuleDescription",
+		RR.use_yn AS "RoutingRuleUseYn", RR.creation_time AS "RoutingRuleCreationTime", RR.modification_time AS "RoutingRuleModificationTime", RR.creator_id AS "RoutingRuleCreatorId", RR.modifier_id AS "RoutingRuleModifierId",
+		RR.authorization_yn AS "RoutingRuleAuthorizationYn", RR.authorization_role_ids AS "RoutingRuleAuthorizationRoleIds", RR.new_path AS "RoutingRuleNewPath", RR.method AS "RoutingRuleMethod",
+		SVC.communication_method AS "TargetServiceCommunicationMethod", SVC.address AS "TargetServiceAddress", SVC.fallback_path AS "TargetServiceFallbackPath",
+		RRD.routing_rule_detail_sequence AS "RoutingRuleDetailSequence", RRD.attribute_name AS "RoutingRuleDetailAttributeName", RRD.attribute_operation AS "RoutingRuleDetailAttributeOperation", 
+		RRD.type AS "RoutingRuleDetailType", RRD.attribute_value AS "RoutingRuleDetailAttributeValue", RRD.logical_operation AS "RoutingRuleDetailAttributeLogicalOperation"
+		FROM
+		routing_rule AS RR
+		LEFT OUTER JOIN routing_rule_detail AS RRD ON
+		(RR.routing_rule_id = RRD.routing_rule_id)
+		LEFT OUTER JOIN service AS SVC ON
+		(RR.target_service_id = SVC.service_id)
+		<include refid="useYnFilter"/>
+		ORDER BY RR.rule_order, RR.routing_rule_id, RRD.routing_rule_detail_sequence ASC
+	</select>
+	
+	<sql id="useYnFilter">
+		AND (RR.use_yn = 'Y' or RR.use_yn is null) AND (SVC.use_yn = 'Y' or SVC.use_yn is null)
+	</sql>
+	
+	<sql id="insertRoutingRuleDetails">
+		<if test = "routingRuleDetails != null and routingRuleDetails.size > 0">
+			<foreach collection="routingRuleDetails" item="routingRuleDetail" index="index"  separator=";">
+				INSERT INTO apigw.routing_rule_detail(
+				routing_rule_id, 
+				routing_rule_detail_sequence, 
+				type, 
+				attribute_name, 
+				attribute_operation,
+				attribute_value,
+				logical_operation
+				)
+				VALUES (
+				#{id, jdbcType=VARCHAR}, 
+				#{index} + 1,
+				#{routingRuleDetail.type, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.RoutingRuleDetailTypeTypeHandler}, 
+				#{routingRuleDetail.attributeName, jdbcType=VARCHAR},
+				#{routingRuleDetail.attributeOperation, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.RoutingRuleDetailAttributeOperationTypeHandler},
+				#{routingRuleDetail.attributeValue, jdbcType=VARCHAR},
+				#{routingRuleDetail.logicalOperation, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.LogicalOperationTypeHandler}
+				);
+			 </foreach>
+		</if>
+	</sql>
+	
+	<insert id="insertRouteRule" parameterType="kr.re.keti.sc.apigw.routingrule.model.RoutingRule" keyProperty="id">
+		INSERT INTO apigw.routing_rule(
+		routing_rule_id, 
+		name, 
+		description,
+		use_yn,
+		rule_order,
+		creation_time,
+		creator_id,
+		method,
+		authorization_yn,
+		authorization_role_ids,
+		new_path,
+		target_service_id
+		)
+		VALUES( 
+		#{id},
+		#{name},
+		#{description},
+		'Y',
+		#{order},
+		now(),
+		#{creatorId},
+		#{method, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.MethodTypeHandler},
+		#{authorizationYn, typeHandler=kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler},
+		#{authorizationRoleIds, typeHandler=kr.re.keti.sc.apigw.routingrule.model.StringArrayListTypeHandler},
+		#{newPath},
+		#{targetServiceId}
+		);
+		<include refid="insertRoutingRuleDetails"/>
+	</insert>
+	
+	<update id="updateRouteRule" parameterType="kr.re.keti.sc.apigw.routingrule.model.RoutingRule" keyProperty="id">
+		UPDATE apigw.routing_rule
+		SET 
+		name=#{name, jdbcType=VARCHAR},
+		description=#{description, jdbcType=VARCHAR}, 
+		target_service_id=#{targetServiceId, jdbcType=VARCHAR},
+		use_yn=#{useYn, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler},
+		rule_order=#{order, jdbcType=INTEGER},
+		modification_time=now(),
+		modifier_id=#{modifierId, jdbcType=VARCHAR},
+		method=#{method, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.MethodTypeHandler},
+		authorization_yn=#{authorizationYn, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler},
+		authorization_role_ids=#{authorizationRoleIds, jdbcType=ARRAY, typeHandler=kr.re.keti.sc.apigw.routingrule.model.StringArrayListTypeHandler},
+		new_path=#{newPath, jdbcType=VARCHAR}
+		WHERE routing_rule.routing_rule_id = #{id};
+		
+		DELETE from apigw.routing_rule_detail
+		WHERE routing_rule_detail.routing_rule_id = #{id};
+		
+		<include refid="insertRoutingRuleDetails"/>
+	</update>
+	
+	<delete id="deleteRouteRule" parameterType="kr.re.keti.sc.apigw.routingrule.model.RoutingRule">
+		DELETE from apigw.routing_rule
+		WHERE routing_rule.routing_rule_id = #{id};
+	</delete>
+</mapper>

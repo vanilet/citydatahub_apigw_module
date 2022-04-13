@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.re.keti.sc.apigw.internalservice.mapper.InternalServiceMapper">
+
+    <resultMap id="service" type="kr.re.keti.sc.apigw.internalservice.model.InternalService" autoMapping="true">
+        <id property="id" column="ServiceId"/>
+        <result property="name" column="ServiceName"/>
+        <result property="description" column="ServiceDescription"/>
+        <result property="communicationMethod" column="ServiceCommunicationMethod" typeHandler="kr.re.keti.sc.apigw.routingrule.model.ServiceCommunicationMethodTypeHandler"/>
+        <result property="address" column="ServiceAddress"/>
+        <result property="fallbackPath" column="ServiceFallbackPath"/>
+        <result property="useYn" column="ServiceUseYn"/>
+        <result property="creationTime" column="ServiceCreationTime"/>
+        <result property="modificationTime" column="ServiceModificationTime"/>
+        <result property="creatorId" column="ServiceCreatorId"/>
+        <result property="modifierId" column="ServiceModifierId"/>
+    </resultMap>
+
+    <select id="selectAllServices" resultMap="service">
+		SELECT SVC.service_id AS "ServiceId", SVC.name AS "ServiceName", SVC.description AS "ServiceDescription",
+		SVC.communication_method AS "ServiceCommunicationMethod", SVC.address AS "ServiceAddress", SVC.fallback_path AS "ServiceFallbackPath",
+		SVC.use_yn AS "ServiceUseYn", SVC.creation_time AS "ServiceCreationTime", SVC.modification_time AS "ServiceModificationTime",
+	    SVC.creator_id AS "ServiceCreatorId", SVC.modifier_id AS "ServiceModifierId"
+		FROM
+		service AS SVC
+		WHERE SVC.use_yn = 'Y'
+	</select>
+
+    <select id="selectService" resultMap="service">
+        SELECT SVC.service_id AS "ServiceId", SVC.name AS "ServiceName", SVC.description AS "ServiceDescription",
+        SVC.communication_method AS "ServiceCommunicationMethod", SVC.address AS "ServiceAddress", SVC.fallback_path AS "ServiceFallbackPath",
+        SVC.use_yn AS "ServiceUseYn", SVC.creation_time AS "ServiceCreationTime", SVC.modification_time AS "ServiceModificationTime",
+        SVC.creator_id AS "ServiceCreatorId", SVC.modifier_id AS "ServiceModifierId"
+        FROM
+        service AS SVC
+        WHERE SVC.service_id = #{id}
+        <include refid="useYnFilter"/>
+    </select>
+
+    <sql id="useYnFilter">
+		AND SVC.use_yn = 'Y'
+	</sql>
+
+    <insert id="insertService" parameterType="kr.re.keti.sc.apigw.internalservice.model.InternalService" keyProperty="id">
+        INSERT INTO apigw.service(
+        service_id,
+        name,
+        description,
+        communication_method,
+        address,
+        fallback_path,
+        use_yn,
+        creation_time,
+        creator_id)
+        VALUES(
+        #{id, jdbcType=VARCHAR},
+        #{name, jdbcType=VARCHAR},
+        #{description, jdbcType=VARCHAR},
+        #{communicationMethod, typeHandler=kr.re.keti.sc.apigw.routingrule.model.ServiceCommunicationMethodTypeHandler},
+        #{address, jdbcType=VARCHAR},
+        #{fallbackPath, jdbcType=VARCHAR},
+        #{useYn, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler},
+        now(),
+        #{creatorId});
+    </insert>
+
+    <update id="updateService" parameterType="kr.re.keti.sc.apigw.internalservice.model.InternalService" keyProperty="id">
+        UPDATE apigw.service
+        SET
+        name=#{name, jdbcType=VARCHAR},
+        description=#{description, jdbcType=VARCHAR},
+        communication_method= #{communicationMethod, typeHandler=kr.re.keti.sc.apigw.routingrule.model.ServiceCommunicationMethodTypeHandler},
+        address=#{address, jdbcType=VARCHAR},
+        fallback_path=#{fallbackPath, jdbcType=VARCHAR},
+        use_yn=#{useYn, jdbcType=VARCHAR, typeHandler=kr.re.keti.sc.apigw.routingrule.model.BooleanTypeHandler},        
+        modification_time=now(),
+        modifier_id=#{modifierId, jdbcType=VARCHAR}
+        WHERE service.service_id = #{id};
+    </update>
+
+    <delete id="deleteService" parameterType="kr.re.keti.sc.apigw.internalservice.model.InternalService">
+		DELETE from apigw.service
+		WHERE service.service_id = #{id};
+	</delete>
+
+</mapper>
