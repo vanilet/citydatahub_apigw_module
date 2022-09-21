@@ -42,8 +42,8 @@
 		RRD.routing_rule_detail_sequence AS "RoutingRuleDetailSequence", RRD.attribute_name AS "RoutingRuleDetailAttributeName", RRD.attribute_operation AS "RoutingRuleDetailAttributeOperation", 
 		RRD.type AS "RoutingRuleDetailType", RRD.attribute_value AS "RoutingRuleDetailAttributeValue", RRD.logical_operation AS "RoutingRuleDetailAttributeLogicalOperation"
 		FROM
-		routing_rule AS RR
-		LEFT OUTER JOIN routing_rule_detail AS RRD ON
+		apigw.routing_rule AS RR
+		LEFT OUTER JOIN apigw.routing_rule_detail AS RRD ON
 		(RR.routing_rule_id = RRD.routing_rule_id)
 		ORDER BY RR.rule_order, RR.routing_rule_id, RRD.routing_rule_detail_sequence ASC
 	</select>
@@ -54,8 +54,8 @@
 		RR.authorization_yn AS "RoutingRuleAuthorizationYn", RR.authorization_role_ids AS "RoutingRuleAuthorizationRoleIds", RR.new_path AS "RoutingRuleNewPath", RR.method AS "RoutingRuleMethod",
 		RRD.routing_rule_detail_sequence AS "RoutingRuleDetailSequence", RRD.attribute_name AS "RoutingRuleDetailAttributeName", RRD.attribute_operation AS "RoutingRuleDetailAttributeOperation", 
 		RRD.type AS "RoutingRuleDetailType", RRD.attribute_value AS "RoutingRuleDetailAttributeValue", RRD.logical_operation AS "RoutingRuleDetailAttributeLogicalOperation"
-		FROM routing_rule AS RR
-		JOIN routing_rule_detail AS RRD ON
+		FROM apigw.routing_rule AS RR
+		JOIN apigw.routing_rule_detail AS RRD ON
 		(RR.routing_rule_id = RRD.routing_rule_id)
 		AND RR.routing_rule_id = #{id}
 		ORDER BY RR.rule_order, RR.routing_rule_id, RRD.routing_rule_detail_sequence ASC
@@ -69,10 +69,10 @@
 		RRD.routing_rule_detail_sequence AS "RoutingRuleDetailSequence", RRD.attribute_name AS "RoutingRuleDetailAttributeName", RRD.attribute_operation AS "RoutingRuleDetailAttributeOperation", 
 		RRD.type AS "RoutingRuleDetailType", RRD.attribute_value AS "RoutingRuleDetailAttributeValue", RRD.logical_operation AS "RoutingRuleDetailAttributeLogicalOperation"
 		FROM
-		routing_rule AS RR
-		LEFT OUTER JOIN routing_rule_detail AS RRD ON
+		apigw.routing_rule AS RR
+		LEFT OUTER JOIN apigw.routing_rule_detail AS RRD ON
 		(RR.routing_rule_id = RRD.routing_rule_id)
-		LEFT OUTER JOIN service AS SVC ON
+		LEFT OUTER JOIN apigw.service AS SVC ON
 		(RR.target_service_id = SVC.service_id)
 		<include refid="useYnFilter"/>
 		ORDER BY RR.rule_order, RR.routing_rule_id, RRD.routing_rule_detail_sequence ASC

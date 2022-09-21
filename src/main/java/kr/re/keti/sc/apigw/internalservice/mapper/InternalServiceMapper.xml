@@ -22,7 +22,7 @@
 		SVC.use_yn AS "ServiceUseYn", SVC.creation_time AS "ServiceCreationTime", SVC.modification_time AS "ServiceModificationTime",
 	    SVC.creator_id AS "ServiceCreatorId", SVC.modifier_id AS "ServiceModifierId"
 		FROM
-		service AS SVC
+		apigw.service AS SVC
 		WHERE SVC.use_yn = 'Y'
 	</select>
 
@@ -32,7 +32,7 @@
         SVC.use_yn AS "ServiceUseYn", SVC.creation_time AS "ServiceCreationTime", SVC.modification_time AS "ServiceModificationTime",
         SVC.creator_id AS "ServiceCreatorId", SVC.modifier_id AS "ServiceModifierId"
         FROM
-        service AS SVC
+        apigw.service AS SVC
         WHERE SVC.service_id = #{id}
         <include refid="useYnFilter"/>
     </select>
