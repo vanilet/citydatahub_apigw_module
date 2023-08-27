@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>kr.re.keti.sc</groupId>
 	<artifactId>apigw</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<name>apigw</name>
 	<description>API Gateway Application Project</description>
 
